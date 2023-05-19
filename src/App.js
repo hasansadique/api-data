@@ -1,23 +1,49 @@
-import logo from './logo.svg';
 import './App.css';
+import React, { useState, useEffect } from 'react';
+import Card from './components/Card';
+import { Pagination } from './components/pagination';
+const API = "https://jsonplaceholder.typicode.com/users";
+
 
 function App() {
+  const [isLoading, setIsLoading] = useState(true);
+  const [users, setUsers] = useState([])
+
+  useEffect(() => {
+    const getUsers = async () => {
+      try {
+        const response = await fetch(API)
+        const users = await response.json()
+        setIsLoading(false)
+        setUsers(users)
+        console.log(users)
+      } catch (error) {
+        setIsLoading(false)
+        console.log(error)
+      }
+    }
+    getUsers()
+  }, [])
+
+  if (isLoading) {
+    return <>
+      <p>Loading...</p>
+    </>
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <section>
+        {
+          users.map(user => (
+            <Card
+              key={user.id}
+              user={user}
+            />
+          ))
+        }
+        <Pagination />
+      </section>
+
     </div>
   );
 }
